@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101a2b">
+  <title>CasaWise | Bengaluru Home Price Estimator</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="CasaWise home">
+        <span class="brand-mark">⌂</span>
+        <span>CasaWise<span class="brand-dot">.</span></span>
+      </a>
+      <span class="api-status"><span class="status-dot"></span> Prediction API</span>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow"><span></span> BENGALURU REAL ESTATE</p>
+          <h1>Find the value<br>behind <em>your next home.</em></h1>
+          <p class="hero-description">Get an estimated property price in seconds using your house details and our machine-learning model.</p>
+          <div class="hero-note">
+            <span class="note-icon">✦</span>
+            <span>Quick estimate · Simple inputs · ML-powered</span>
+          </div>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <div class="sun"></div>
+          <div class="building building-back"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="building building-front"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="ground"></div>
+          <div class="art-caption"><span>BLR</span><span>Home, estimated.</span></div>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <div class="form-panel">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">PROPERTY DETAILS</p>
+              <h2>Tell us about the home</h2>
+            </div>
+            <span class="step-badge">01 / 01</span>
+          </div>
+
+          <form id="prediction-form">
+            <label for="location">Location in Bengaluru</label>
+            <div class="input-wrap location-wrap">
+              <span class="input-icon">⌖</span>
+              <input id="location" name="location" type="text" placeholder="e.g. Whitefield" required autocomplete="address-level2">
+            </div>
+
+            <div class="field-grid">
+              <div class="field">
+                <label for="total_sqft">Built-up area</label>
+                <div class="input-wrap">
+                  <input id="total_sqft" name="total_sqft" type="number" min="1" step="any" placeholder="1200" required>
+                  <span class="unit">sq. ft.</span>
+                </div>
+              </div>
+              <div class="field">
+                <label for="bedrooms">Bedrooms</label>
+                <div class="input-wrap select-wrap">
+                  <select id="bedrooms" name="bedrooms" required>
+                    <option value="1">1 bedroom</option>
+                    <option value="2" selected>2 bedrooms</option>
+                    <option value="3">3 bedrooms</option>
+                    <option value="4">4 bedrooms</option>
+                    <option value="5">5 bedrooms</option>
+                    <option value="6">6+ bedrooms</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field field-full">
+                <label for="bath">Bathrooms</label>
+                <div class="bath-options" role="group" aria-label="Number of bathrooms">
+                  <button type="button" class="bath-option" data-bath="1">1</button>
+                  <button type="button" class="bath-option active" data-bath="2">2</button>
+                  <button type="button" class="bath-option" data-bath="3">3</button>
+                  <button type="button" class="bath-option" data-bath="4">4+</button>
+                </div>
+                <input type="hidden" id="bath" name="bath" value="2">
+              </div>
+            </div>
+
+            <button class="submit-button" id="submit-button" type="submit">
+              <span>Estimate my home price</span><span class="button-arrow">↗</span>
+            </button>
+            <p class="form-footnote"><span>ⓘ</span> This is an estimate from a machine-learning model, not a formal valuation.</p>
+          </form>
+        </div>
+
+        <aside class="result-panel" id="result-panel" aria-live="polite">
+          <div class="result-topline"><span class="result-icon">✦</span><span>YOUR ESTIMATE</span></div>
+          <div id="result-empty" class="result-empty">
+            <div class="result-illustration"><span>₹</span></div>
+            <h3>Your result lives here</h3>
+            <p>Enter the property details and we'll calculate an estimated price for you.</p>
+            <div class="result-divider"></div>
+            <div class="mini-row"><span>Location</span><strong>—</strong></div>
+            <div class="mini-row"><span>Property size</span><strong>—</strong></div>
+            <div class="mini-row"><span>Model status</span><strong class="model-ready"><span></span> Ready to estimate</strong></div>
+          </div>
+          <div id="result-success" class="result-success hidden">
+            <p class="result-label">Estimated property price</p>
+            <div class="price-line"><span class="rupee">₹</span><span id="price-value">0</span></div>
+            <p class="price-unit">lakhs</p>
+            <div class="result-divider"></div>
+            <div class="mini-row"><span>Location</span><strong id="result-location">—</strong></div>
+            <div class="mini-row"><span>Property size</span><strong id="result-area">—</strong></div>
+            <div class="mini-row"><span>Configuration</span><strong id="result-config">—</strong></div>
+            <div class="result-disclaimer">A model-based estimate. Actual market prices may differ.</div>
+            <button type="button" id="reset-button" class="reset-button">Estimate another property ↗</button>
+          </div>
+          <div id="result-error" class="error-message hidden" role="alert"></div>
+        </aside>
+      </section>
+
+      <section class="how-it-works">
+        <div><span class="how-number">01</span><div><h3>Add property details</h3><p>Location, area and configuration.</p></div></div>
+        <div><span class="how-number">02</span><div><h3>Model makes a prediction</h3><p>Your details are sent to the deployed API.</p></div></div>
+        <div><span class="how-number">03</span><div><h3>Get your estimate</h3><p>See the predicted value instantly.</p></div></div>
+      </section>
+    </main>
+
+    <footer><a class="brand footer-brand" href="/"><span class="brand-mark">⌂</span><span>CasaWise<span class="brand-dot">.</span></span></a><span>Built with Flask + machine learning</span><a href="/api">API details ↗</a></footer>
+  </div>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
